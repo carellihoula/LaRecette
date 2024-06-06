@@ -1,5 +1,6 @@
-package com.example.larecette
+package com.example.larecette.data.retrofit
 
+import com.example.larecette.data.dataclasse.CategoriesResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -21,4 +22,4 @@ interface ApiService {
     }
 }
 
-data class CategoriesResponse(val categories: List<Category>)
+

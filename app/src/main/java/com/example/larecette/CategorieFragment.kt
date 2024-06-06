@@ -5,9 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.larecette.R
+import com.example.larecette.adapters.CategoriesAdapter
+import com.example.larecette.data.retrofit.ApiService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +42,7 @@ class CategorieFragment : Fragment() {
 
                 CoroutineScope(Dispatchers.Main).launch {
                     categoriesAdapter = CategoriesAdapter(categories)
-                    rvCategories.layoutManager = LinearLayoutManager(requireContext())
+                    rvCategories.layoutManager = GridLayoutManager(requireContext(), 3)
                     rvCategories.adapter = categoriesAdapter
                 }
             } catch (e: Exception) {
