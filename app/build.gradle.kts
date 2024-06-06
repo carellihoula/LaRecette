@@ -61,4 +61,10 @@ dependencies {
 
     //Dépendance pour afficher des GIFs animés dans l'application
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.17")
+
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.github.bumptech.glide:glide:4.11.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
+
 }
