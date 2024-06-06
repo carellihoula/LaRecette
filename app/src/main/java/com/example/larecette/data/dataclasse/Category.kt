@@ -1,4 +1,9 @@
 package com.example.larecette.data.dataclasse
 
-data class Category(val strCategory: String, val strCategoryThumb: String, val strCategoryDescription: String)
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class Category(val strCategory: String, val strCategoryThumb: String, val strCategoryDescription: String): Parcelable
+
 

@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.larecette.adapters.CategoriesAdapter
+import com.example.larecette.data.dataclasse.Category
 import com.example.larecette.data.retrofit.ApiService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +25,6 @@ class CategorieFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_categorie, container, false)
         rvCategories = view.findViewById(R.id.rv_categories)
 
@@ -41,13 +42,27 @@ class CategorieFragment : Fragment() {
                 val categories = response.categories
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    categoriesAdapter = CategoriesAdapter(categories)
+                    categoriesAdapter = CategoriesAdapter(categories) { category ->
+                        showCategoryItems(category)
+                    }
                     rvCategories.layoutManager = GridLayoutManager(requireContext(), 3)
                     rvCategories.adapter = categoriesAdapter
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    private fun showCategoryItems(category: Category) {
+        val fragment = CategoryItemsFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable("category", category)
+            }
+        }
+        parentFragmentManager.commit {
+            replace(R.id.frag_host, fragment)
+            addToBackStack(null)
         }
     }
 }

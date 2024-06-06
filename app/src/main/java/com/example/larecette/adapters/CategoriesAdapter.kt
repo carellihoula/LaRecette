@@ -12,7 +12,8 @@ import com.example.larecette.data.dataclasse.Category
 
 
 // Adaptateur pour afficher les catégories dans un RecyclerView
-class CategoriesAdapter(private val categories: List<Category>) :
+class CategoriesAdapter(private val categories: List<Category>,
+                        private val onCategoryClick: (Category) -> Unit) :
     RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder>() {
 
     // Crée une nouvelle vue pour un élément de la liste (ViewHolder)
@@ -27,7 +28,15 @@ class CategoriesAdapter(private val categories: List<Category>) :
         holder.categoryName.text = category.strCategory
 
         //Glide pour charger l'image de la catégorie à partir de l'URL et l'afficher dans l'ImageView
-        Glide.with(holder.categoryImage.context).load(category.strCategoryThumb).into(holder.categoryImage)
+        Glide.with(holder.categoryImage.context)
+            .load(category.strCategoryThumb)
+            .placeholder(R.drawable.placeholder_image)
+            .error(R.drawable.error_image)
+            .into(holder.categoryImage)
+
+        holder.itemView.setOnClickListener {
+            onCategoryClick(category)
+        }
     }
     // Retourne le nombre total d'éléments dans la liste des catégories
     override fun getItemCount(): Int = categories.size
