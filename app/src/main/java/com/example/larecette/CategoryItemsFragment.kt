@@ -55,7 +55,9 @@ class CategoryItemsFragment : Fragment() {
 
                 CoroutineScope(Dispatchers.Main).launch {
                     itemCount.text = "${items.size} items"
-                    categoryItemsAdapter = CategoryItemsAdapter(items)
+                    categoryItemsAdapter = CategoryItemsAdapter(items) { meal ->
+                        showMealDetails(meal)
+                    }
                     rvCategoryItems.layoutManager = GridLayoutManager(requireContext(), 3)
                     rvCategoryItems.adapter = categoryItemsAdapter
                 }
@@ -65,11 +67,11 @@ class CategoryItemsFragment : Fragment() {
         }
     }
    private fun showMealDetails(meal: Meal) {
-        val fragment = MealDetailFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable("meal", meal)
-            }
-        }
+       val fragment = MealDetailFragment().apply {
+           arguments = Bundle().apply {
+               putString("mealId", meal.idMeal)
+           }
+       }
         parentFragmentManager.commit {
             replace(R.id.frag_host, fragment)
             addToBackStack(null)

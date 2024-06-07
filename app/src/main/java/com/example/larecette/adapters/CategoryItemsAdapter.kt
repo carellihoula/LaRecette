@@ -10,7 +10,8 @@ import com.bumptech.glide.Glide
 import com.example.larecette.R
 import com.example.larecette.data.dataclasse.Meal
 
-class CategoryItemsAdapter(private val items: List<Meal>) :
+class CategoryItemsAdapter(private val items: List<Meal>,
+                           private val onMealClick: (Meal) -> Unit) :
     RecyclerView.Adapter<CategoryItemsAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -27,6 +28,10 @@ class CategoryItemsAdapter(private val items: List<Meal>) :
             .placeholder(R.drawable.placeholder_image)
             .error(R.drawable.error_image)
             .into(holder.itemImage)
+
+        holder.itemView.setOnClickListener {
+            onMealClick(item)
+        }
     }
 
     override fun getItemCount(): Int = items.size

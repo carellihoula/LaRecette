@@ -12,7 +12,7 @@
         <ImageView
             android:id="@+id/mealImage"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="400dp"
             android:scaleType="centerCrop"
             android:layout_marginBottom="16dp" />
 
