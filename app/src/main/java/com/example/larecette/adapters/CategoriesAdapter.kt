@@ -10,15 +10,17 @@ import com.bumptech.glide.Glide
 import com.example.larecette.R
 import com.example.larecette.data.dataclasse.Category
 
-
 // Adaptateur pour afficher les catégories dans un RecyclerView
-class CategoriesAdapter(private val categories: List<Category>,
-                        private val onCategoryClick: (Category) -> Unit) :
-    RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder>() {
+class CategoriesAdapter(
+    private val categories: List<Category>,
+    private val onCategoryClick: (Category) -> Unit,
+    private val useSmallLayout: Boolean = false // Ajout du paramètre useSmallLayout
+) : RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder>() {
 
     // Crée une nouvelle vue pour un élément de la liste (ViewHolder)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_category, parent, false)
+        val layout = if (useSmallLayout) R.layout.item_category_small else R.layout.item_category
+        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
         return CategoryViewHolder(view)
     }
 
@@ -27,7 +29,7 @@ class CategoriesAdapter(private val categories: List<Category>,
         val category = categories[position]
         holder.categoryName.text = category.strCategory
 
-        //Glide pour charger l'image de la catégorie à partir de l'URL et l'afficher dans l'ImageView
+        // Glide pour charger l'image de la catégorie à partir de l'URL et l'afficher dans l'ImageView
         Glide.with(holder.categoryImage.context)
             .load(category.strCategoryThumb)
             .placeholder(R.drawable.placeholder_image)
@@ -38,6 +40,7 @@ class CategoriesAdapter(private val categories: List<Category>,
             onCategoryClick(category)
         }
     }
+
     // Retourne le nombre total d'éléments dans la liste des catégories
     override fun getItemCount(): Int = categories.size
 

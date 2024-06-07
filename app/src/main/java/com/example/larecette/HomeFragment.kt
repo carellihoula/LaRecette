@@ -1,59 +1,139 @@
 package com.example.larecette
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.cardview.widget.CardView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.larecette.adapters.CategoriesAdapter
+import com.example.larecette.adapters.PopularMealsAdapter
+import com.example.larecette.data.dataclasse.Category
+import com.example.larecette.data.dataclasse.Meal
+import com.example.larecette.data.retrofit.ApiService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var apiService: ApiService
+    private lateinit var categoriesAdapter: CategoriesAdapter
+    private lateinit var popularMealsAdapter: PopularMealsAdapter
+    private lateinit var rvCategories: RecyclerView
+    private lateinit var rvPopularMeals: RecyclerView
+    private lateinit var cardRandomMeal: CardView
+    private lateinit var mealImage: ImageView
+    private lateinit var mealName: TextView
+    private lateinit var btnRandomMeal: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
+        rvCategories = view.findViewById(R.id.rv_categories)
+        rvPopularMeals = view.findViewById(R.id.rv_popular_meals)
+        cardRandomMeal = view.findViewById(R.id.card_random_meal)
+        mealImage = view.findViewById(R.id.mealImage)
+        mealName = view.findViewById(R.id.mealName)
+        btnRandomMeal = view.findViewById(R.id.btn_random_meal)
+
+        apiService = ApiService.create()
+
+        fetchCategories()
+        fetchPopularMeals()
+
+        btnRandomMeal.setOnClickListener {
+            fetchRandomMeal()
+        }
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun fetchCategories() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = apiService.getCategories()
+                val categories = response.categories
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    categoriesAdapter = CategoriesAdapter(categories, { category ->
+                        showCategoryItems(category)
+                    }, useSmallLayout = true)
+                    rvCategories.layoutManager = GridLayoutManager(requireContext(), 4)
+                    rvCategories.adapter = categoriesAdapter
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("HomeFragment", "Error fetching categories: ${e.message}")
             }
+        }
+    }
+
+    private fun fetchPopularMeals() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = apiService.getPopularMeals()
+                val meals = response.meals.shuffled().take(12) // Take 12 random meals
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    popularMealsAdapter = PopularMealsAdapter(meals) { meal ->
+                        Toast.makeText(requireContext(), "Clicked on ${meal.strMeal}", Toast.LENGTH_SHORT).show()
+                    }
+                    rvPopularMeals.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    rvPopularMeals.adapter = popularMealsAdapter
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("HomeFragment", "Error fetching popular meals: ${e.message}")
+            }
+        }
+    }
+
+    private fun showCategoryItems(category: Category) {
+        val fragment = CategoryItemsFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable("category", category)
+            }
+        }
+        parentFragmentManager.commit {
+            replace(R.id.frag_host, fragment)
+            addToBackStack(null)
+        }
+    }
+
+    private fun fetchRandomMeal() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = apiService.getRandomMeal()
+                val meal = response.meals.firstOrNull()
+
+                meal?.let {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        mealName.text = it.strMeal
+                        Glide.with(this@HomeFragment)
+                            .load(it.strMealThumb)
+                            .placeholder(R.drawable.placeholder_image)
+                            .error(R.drawable.error_image)
+                            .into(mealImage)
+                        cardRandomMeal.visibility = View.VISIBLE
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("HomeFragment", "Error fetching random meal: ${e.message}")
+            }
+        }
     }
 }

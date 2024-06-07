@@ -13,6 +13,13 @@ interface ApiService {
     @GET("filter.php")
     suspend fun getCategoryItems(@Query("c") categoryName: String): ItemResponse
 
+    @GET("filter.php")
+    suspend fun getPopularMeals(@Query("c") categoryName: String = "Chicken"): ItemResponse
+
+    @GET("random.php")
+    suspend fun getRandomMeal(): ItemResponse
+
+
     companion object {
         private const val BASE_URL = "https://www.themealdb.com/api/json/v1/1/"
 

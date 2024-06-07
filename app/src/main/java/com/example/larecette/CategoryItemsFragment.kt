@@ -1,6 +1,7 @@
 package com.example.larecette
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.widget.TextView
+import androidx.fragment.app.commit
+import com.example.larecette.data.dataclasse.Meal
 
 class CategoryItemsFragment : Fragment() {
 
@@ -60,5 +63,21 @@ class CategoryItemsFragment : Fragment() {
                 e.printStackTrace()
             }
         }
+    }
+    private fun showMealDetails(meal: Meal) {
+        val fragment = MealDetailFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable("meal", meal)
+            }
+        }
+        parentFragmentManager.commit {
+            replace(R.id.frag_host, fragment)
+            addToBackStack(null)
+        }
+    }
+    // Extension function to handle getParcelable deprecation
+    inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String?): T? = when {
+        android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU -> getParcelable(key, T::class.java)
+        else -> @Suppress("DEPRECATION") getParcelable(key) as? T
     }
 }

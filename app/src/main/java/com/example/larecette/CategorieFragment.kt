@@ -42,9 +42,9 @@ class CategorieFragment : Fragment() {
                 val categories = response.categories
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    categoriesAdapter = CategoriesAdapter(categories) { category ->
+                    categoriesAdapter = CategoriesAdapter(categories, { category ->
                         showCategoryItems(category)
-                    }
+                    }, useSmallLayout = false) // Set useSmallLayout to false for this fragment
                     rvCategories.layoutManager = GridLayoutManager(requireContext(), 3)
                     rvCategories.adapter = categoriesAdapter
                 }
