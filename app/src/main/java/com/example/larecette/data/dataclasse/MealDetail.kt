@@ -3,7 +3,7 @@ package com.example.larecette.data.dataclasse
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
+
 data class MealDetail(
     val dateModified: String?,
     val idMeal: String,
@@ -58,4 +58,4 @@ data class MealDetail(
     val strSource: String,
     val strTags: String?,
     val strYoutube: String
-):Parcelable
+)
