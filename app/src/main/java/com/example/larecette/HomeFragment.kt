@@ -89,7 +89,7 @@ class HomeFragment : Fragment() {
 
                 CoroutineScope(Dispatchers.Main).launch {
                     popularMealsAdapter = PopularMealsAdapter(meals) { meal ->
-                        Toast.makeText(requireContext(), "Clicked on ${meal.strMeal}", Toast.LENGTH_SHORT).show()
+                        showMealDetails(meal)
                     }
                     rvPopularMeals.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                     rvPopularMeals.adapter = popularMealsAdapter
@@ -134,6 +134,17 @@ class HomeFragment : Fragment() {
                 e.printStackTrace()
                 Log.e("HomeFragment", "Error fetching random meal: ${e.message}")
             }
+        }
+    }
+    private fun showMealDetails(meal: Meal) {
+        val fragment = MealDetailFragment().apply {
+            arguments = Bundle().apply {
+                putString("mealId", meal.idMeal)
+            }
+        }
+        parentFragmentManager.commit {
+            replace(R.id.frag_host, fragment)
+            addToBackStack(null)
         }
     }
 }

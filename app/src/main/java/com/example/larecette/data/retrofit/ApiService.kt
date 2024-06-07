@@ -2,6 +2,9 @@ package com.example.larecette.data.retrofit
 
 import com.example.larecette.data.dataclasse.CategoriesResponse
 import com.example.larecette.data.dataclasse.ItemResponse
+import com.example.larecette.data.dataclasse.Meal
+import com.example.larecette.data.dataclasse.MealResponse
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -19,6 +22,8 @@ interface ApiService {
     @GET("random.php")
     suspend fun getRandomMeal(): ItemResponse
 
+    @GET("lookup.php")
+    suspend fun getMealDetails(@Query("i") mealId: String): MealResponse
 
     companion object {
         private const val BASE_URL = "https://www.themealdb.com/api/json/v1/1/"

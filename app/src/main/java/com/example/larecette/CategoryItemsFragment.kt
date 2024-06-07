@@ -64,7 +64,7 @@ class CategoryItemsFragment : Fragment() {
             }
         }
     }
-    private fun showMealDetails(meal: Meal) {
+   private fun showMealDetails(meal: Meal) {
         val fragment = MealDetailFragment().apply {
             arguments = Bundle().apply {
                 putParcelable("meal", meal)
@@ -75,9 +75,5 @@ class CategoryItemsFragment : Fragment() {
             addToBackStack(null)
         }
     }
-    // Extension function to handle getParcelable deprecation
-    inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String?): T? = when {
-        android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU -> getParcelable(key, T::class.java)
-        else -> @Suppress("DEPRECATION") getParcelable(key) as? T
-    }
+
 }
